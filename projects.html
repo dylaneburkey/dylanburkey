@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dylan Burkey | Projects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tekton+Pro&family=Courier+Prime&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #d4d4d4;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .main-area {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .menu-bar {
+            background: linear-gradient(180deg, #f0f0f0 0%, #d8d8d8 100%);
+            border-bottom: 1px solid #999;
+            padding: 2px 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            height: 24px;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .menu-bar .sw-logo {
+            color: #cc0000;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+
+        .menu-bar span {
+            padding: 2px 6px;
+            cursor: default;
+        }
+
+        .menu-bar span:hover {
+            background: #b8d4f0;
+        }
+
+        .toolbar {
+            background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+            border-bottom: 1px solid #999;
+            padding: 3px 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 32px;
+        }
+
+        .toolbar-btn {
+            width: 24px;
+            height: 24px;
+            background: #f5f5f5;
+            border: 1px solid #aaa;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #555;
+            cursor: default;
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 20px;
+            background: #aaa;
+            margin: 0 3px;
+        }
+
+        .tab-bar {
+            background: #c8c8c8;
+            border-bottom: 1px solid #999;
+            padding: 0 8px;
+            display: flex;
+            align-items: flex-end;
+            height: 24px;
+        }
+
+        .tab {
+            padding: 3px 12px;
+            font-size: 11px;
+            background: #e0e0e0;
+            border: 1px solid #999;
+            border-bottom: none;
+            border-radius: 3px 3px 0 0;
+            margin-right: 2px;
+            color: #333;
+        }
+
+        .tab.active {
+            background: #fff;
+            font-weight: 500;
+        }
+
+        /* === FEATURE TREE === */
+        .feature-tree {
+            width: 200px;
+            background: #fff;
+            border-right: 1px solid #999;
+            padding: 8px;
+            font-size: 11px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .tree-item {
+            padding: 2px 0 2px 12px;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #333;
+        }
+
+        .tree-item.root {
+            padding-left: 0;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .tree-icon {
+            width: 14px;
+            height: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            flex-shrink: 0;
+        }
+
+        .tree-icon.folder { color: #c8a800; }
+        .tree-icon.doc { color: #4488cc; }
+        .tree-icon.anno { color: #cc4444; }
+
+        .tree-indent {
+            padding-left: 16px;
+        }
+
+        /* === VIEWPORT === */
+        .viewport {
+            flex: 1;
+            background: #b8b8b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .drawing-sheet {
+            background: #fff;
+            border: 1px solid #333;
+            width: 1100px;
+            position: relative;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transform-origin: center center;
+        }
+
+        /* === PROJECTS GRID === */
+        .projects-content {
+            font-family: 'Courier Prime', monospace;
+            padding: 10px;
+        }
+
+        .projects-content h2 {
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+            margin-bottom: 20px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 160px);
+            gap: 30px 60px;
+            padding-bottom: 60px;
+            justify-content: center;
+        }
+
+        .projects-grid .project-card:last-child {
+            grid-column: 1 / -1;
+            max-width: 160px;
+            justify-self: center;
+        }
+
+        .all-projects-wrap {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .all-projects-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            color: #333;
+            text-decoration: none;
+            border: 1px solid #999;
+            padding: 3px 10px;
+            border-radius: 2px;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .all-projects-btn:hover {
+            background: #e0e8f0;
+        }
+
+        .project-card {
+            text-align: center;
+            text-decoration: none;
+            color: #000;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            max-width: 160px;
+            justify-self: center;
+            position: relative;
+            background: #fff;
+            border: 1.5px solid #000;
+            padding: 8px;
+            margin-bottom: 0;
+            margin-right: 0;
+        }
+
+        .project-card:hover {
+            background: #f0f4f8;
+        }
+
+        /* Thin isometric right face */
+        .project-card::before {
+            content: none;
+        }
+
+        /* Thin isometric bottom face */
+        .project-card::after {
+            content: none;
+        }
+
+        /* X dimension line */
+        .project-card .dim-x {
+            position: absolute;
+            bottom: -14px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #0066cc;
+        }
+        .project-card .dim-x::before, .project-card .dim-x::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            width: 1px;
+            height: 7px;
+            background: #0066cc;
+        }
+        .project-card .dim-x::before { left: 0; }
+        .project-card .dim-x::after { right: 0; }
+        .project-card .dim-x span {
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 7px;
+            font-family: 'Courier Prime', monospace;
+            color: #0066cc;
+        }
+
+        /* Y dimension line */
+        .project-card .dim-y {
+            position: absolute;
+            top: 0;
+            right: -11px;
+            width: 1px;
+            height: 100%;
+            background: #0066cc;
+        }
+        .project-card .dim-y::before, .project-card .dim-y::after {
+            content: '';
+            position: absolute;
+            left: -3px;
+            width: 7px;
+            height: 1px;
+            background: #0066cc;
+        }
+        .project-card .dim-y::before { top: 0; }
+        .project-card .dim-y::after { bottom: 0; }
+        .project-card .dim-y span {
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 7px;
+            font-family: 'Courier Prime', monospace;
+            color: #0066cc;
+        }
+
+        .project-drawing {
+            width: 70px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-drawing svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .project-card h3 {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-card p {
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        /* === TITLE BLOCK === */
+        .title-block {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 2px solid #000;
+            width: 300px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 9px;
+        }
+
+        .tb-row {
+            display: flex;
+            border-bottom: 1px solid #000;
+        }
+
+        .tb-row:last-child {
+            border-bottom: none;
+        }
+
+        .tb-cell {
+            padding: 3px 6px;
+            border-right: 1px solid #000;
+            flex: 1;
+        }
+
+        .tb-cell:last-child {
+            border-right: none;
+        }
+
+        .tb-cell.label {
+            font-size: 8px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .tb-cell.title {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            padding: 6px 6px;
+        }
+
+        .tb-cell.large {
+            flex: 2;
+        }
+
+        /* === STATUS BAR === */
+        .status-bar {
+            background: linear-gradient(180deg, #e0e0e0 0%, #c8c8c8 100%);
+            border-top: 1px solid #999;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 10px;
+            color: #555;
+            gap: 20px;
+        }
+
+        .status-bar .sheet-tab {
+            background: #fff;
+            border: 1px solid #999;
+            padding: 1px 8px;
+            font-size: 10px;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 1100px) {
+            .drawing-sheet {
+                width: 95%;
+                min-height: auto;
+            }
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            .projects-grid .project-card:last-child {
+                max-width: 100%;
+            }
+            .title-block {
+                position: relative;
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .feature-tree { display: none; }
+            .toolbar { display: none; }
+            .tab-bar { display: none; }
+            .viewport { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <span class="sw-logo">&#9632; Dylan Burkey</span>
+        <span>File</span>
+        <span>Edit</span>
+        <span>View</span>
+        <span>Insert</span>
+        <span>Tools</span>
+        <span>Window</span>
+        <span>Help</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-btn">&#9634;</div>
+        <div class="toolbar-btn">&#9998;</div>
+        <div class="toolbar-btn">&#8635;</div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-btn">&#9711;</div>
+        <div class="toolbar-btn">&#9645;</div>
+        <div class="toolbar-btn">&#9651;</div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-btn">A</div>
+        <div class="toolbar-btn">&#8676;</div>
+        <div class="toolbar-btn">&#8677;</div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab active">View Layout</div>
+        <div class="tab">Annotation</div>
+        <div class="tab">Sketch</div>
+        <div class="tab">Evaluate</div>
+    </div>
+
+    <!-- Main Area -->
+    <div class="main-area">
+
+        <!-- Feature Tree -->
+        <div class="feature-tree">
+            <div class="tree-item root">
+                <span class="tree-icon folder">&#9660;</span>
+                DYLANBURKEY
+            </div>
+            <div class="tree-indent">
+                <div class="tree-item">
+                    <span class="tree-icon anno">&#9670;</span>
+                    Annotations
+                </div>
+                <div class="tree-item">
+                    <a href="index.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:4px;">
+                        <span class="tree-icon folder">&#9654;</span>
+                        Sheet1 (About)
+                    </a>
+                </div>
+                <div class="tree-item">
+                    <span class="tree-icon folder" style="color:#4488cc;">&#9660;</span>
+                    <strong>Sheet2 (Projects)</strong>
+                </div>
+                <div class="tree-indent">
+                    <div class="tree-item">
+                        <span class="tree-icon doc">&#9724;</span>
+                        Toothless Robot
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-icon doc">&#9724;</span>
+                        DDJ-FLX10 Display
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-icon doc">&#9724;</span>
+                        CWRU Bearing Analysis
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-icon doc">&#9724;</span>
+                        Electronics Projects
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-icon doc">&#9724;</span>
+                        CAD Projects
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drawing Viewport -->
+        <div class="viewport">
+            <div class="drawing-sheet">
+
+                <div class="projects-content">
+                    <h2>Projects</h2>
+
+                    <div class="all-projects-wrap">
+                    <a href="https://github.com/dylaneburkey" target="_blank" class="all-projects-btn">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#333" stroke-width="1.2" stroke-linecap="round">
+                            <line x1="4" y1="2" x2="11" y2="2"/>
+                            <line x1="4" y1="6" x2="11" y2="6"/>
+                            <line x1="4" y1="10" x2="11" y2="10"/>
+                            <circle cx="1.5" cy="2" r="0.8" fill="#333" stroke="none"/>
+                            <circle cx="1.5" cy="6" r="0.8" fill="#333" stroke="none"/>
+                            <circle cx="1.5" cy="10" r="0.8" fill="#333" stroke="none"/>
+                        </svg>
+                        All Projects
+                    </a>
+                    </div>
+
+                    <div class="projects-grid">
+
+                        <!-- Toothless Robot -->
+                        <a href="https://github.com/dylaneburkey" target="_blank" class="project-card">
+                            <div class="project-drawing">
+                                <svg viewBox="0 0 100 90" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <!-- Robot head - isometric cube -->
+                                    <!-- Top face -->
+                                    <polygon points="50,15 78,28 50,41 22,28" fill="#4a90d9"/>
+                                    <!-- Left face -->
+                                    <polygon points="22,28 50,41 50,62 22,49" fill="#2d6cb5"/>
+                                    <!-- Right face -->
+                                    <polygon points="50,41 78,28 78,49 50,62" fill="#3a7fc8"/>
+                                    <!-- Eyes on front-left face -->
+                                    <circle cx="32" cy="37" r="3" fill="#fff" stroke="#000" stroke-width="1"/>
+                                    <circle cx="32" cy="37" r="1.5" fill="#111" stroke="none"/>
+                                    <circle cx="42" cy="42" r="3" fill="#fff" stroke="#000" stroke-width="1"/>
+                                    <circle cx="42" cy="42" r="1.5" fill="#111" stroke="none"/>
+                                    <!-- Antenna on top -->
+                                    <line x1="50" y1="15" x2="50" y2="7"/>
+                                    <circle cx="50" cy="5" r="2.5" fill="#ff4444" stroke="#000" stroke-width="1"/>
+                                    <!-- Mouth on front-left face -->
+                                    <path d="M30,46 Q36,50 44,48" stroke="#fff" stroke-width="1.5" fill="none"/>
+                                    <!-- Ear/panel on right face -->
+                                    <rect x="58" y="34" width="10" height="8" fill="#2060a0" stroke="#000" stroke-width="0.8" rx="1"/>
+                                </svg>
+                            </div>
+                            <h3>Toothless - Autonomous Robot</h3>
+                            <p>Arduino mechatronics, DFM/DFA, 2nd of 70+ teams</p>
+                            <div class="dim-x"><span>150</span></div>
+                            <div class="dim-y"><span>120</span></div>
+                        </a>
+
+                        <!-- DDJ-FLX10 -->
+                        <a href="https://github.com/dylaneburkey" target="_blank" class="project-card">
+                            <div class="project-drawing">
+                                <svg viewBox="0 0 100 90" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <!-- Enclosure isometric box -->
+                                    <polygon points="50,15 88,30 50,45 12,30" fill="#f5f5f5"/>
+                                    <polygon points="12,30 50,45 50,55 12,40" fill="#e0e0e0"/>
+                                    <polygon points="50,45 88,30 88,40 50,55" fill="#d0d0d0"/>
+                                    <!-- Screen inset on top face -->
+                                    <polygon points="50,20 78,31 50,40 22,31" fill="#1a1a2e"/>
+                                    <!-- Screen content -->
+                                    <line x1="32" y1="30" x2="50" y2="23" stroke="#00cc88" stroke-width="0.8"/>
+                                    <line x1="35" y1="33" x2="48" y2="27" stroke="#00cc88" stroke-width="0.8"/>
+                                    <circle cx="62" cy="28" r="3" stroke="#00cc88" stroke-width="0.7" fill="none"/>
+                                </svg>
+                            </div>
+                            <h3>DDJ-FLX10 Rekordbox Display</h3>
+                            <p>Raspberry Pi, custom 3D-printed enclosure, touchscreen UI</p>
+                            <div class="dim-x"><span>150</span></div>
+                            <div class="dim-y"><span>120</span></div>
+                        </a>
+
+                        <!-- CWRU Bearing -->
+                        <a href="https://github.com/dylaneburkey" target="_blank" class="project-card">
+                            <div class="project-drawing">
+                                <svg viewBox="0 0 100 90" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <!-- Cylinder side wall fill -->
+                                    <rect x="20" y="28" width="60" height="20" fill="#3a3a3a" stroke="none"/>
+                                    <!-- Bottom arc -->
+                                    <path d="M20,48 A30,14 0 0,0 80,48" fill="#2a2a2a"/>
+                                    <!-- Side lines -->
+                                    <line x1="20" y1="28" x2="20" y2="48"/>
+                                    <line x1="80" y1="28" x2="80" y2="48"/>
+                                    <!-- Outer cylinder top face -->
+                                    <ellipse cx="50" cy="28" rx="30" ry="14" fill="#4a4a4a"/>
+                                    <!-- Inner bore top -->
+                                    <ellipse cx="50" cy="28" rx="10" ry="5" fill="#1a1a1a"/>
+                                    <!-- Bore cylinder depth -->
+                                    <line x1="40" y1="28" x2="40" y2="34" stroke-width="1.2"/>
+                                    <line x1="60" y1="28" x2="60" y2="34" stroke-width="1.2"/>
+                                    <path d="M40,34 A10,5 0 0,0 60,34" stroke-width="1.2" fill="#111"/>
+                                    <!-- Rolling elements on top face -->
+                                    <ellipse cx="50" cy="17" rx="3" ry="1.8" fill="#bbb" stroke="#666" stroke-width="0.6"/>
+                                    <ellipse cx="35" cy="23" rx="3" ry="1.8" fill="#bbb" stroke="#666" stroke-width="0.6"/>
+                                    <ellipse cx="65" cy="23" rx="3" ry="1.8" fill="#bbb" stroke="#666" stroke-width="0.6"/>
+                                    <ellipse cx="35" cy="34" rx="3" ry="1.8" fill="#bbb" stroke="#666" stroke-width="0.6"/>
+                                    <ellipse cx="65" cy="34" rx="3" ry="1.8" fill="#bbb" stroke="#666" stroke-width="0.6"/>
+                                    <ellipse cx="50" cy="39" rx="3" ry="1.8" fill="#bbb" stroke="#666" stroke-width="0.6"/>
+                                </svg>
+                            </div>
+                            <h3>CWRU Bearing Analysis</h3>
+                            <p>MATLAB vibration diagnostics, RMS, RK4/Euler prognostics</p>
+                            <div class="dim-x"><span>150</span></div>
+                            <div class="dim-y"><span>120</span></div>
+                        </a>
+
+                        <!-- Electronics - Breadboard -->
+                        <a href="https://github.com/dylaneburkey" target="_blank" class="project-card">
+                            <div class="project-drawing">
+                                <svg viewBox="0 0 100 90" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <!-- Breadboard isometric -->
+                                    <polygon points="50,12 90,28 50,44 10,28" fill="#f5f0e0"/>
+                                    <polygon points="10,28 50,44 50,50 10,34" fill="#d4c9a8"/>
+                                    <polygon points="50,44 90,28 90,34 50,50" fill="#c4b998"/>
+                                    <!-- Power rails -->
+                                    <line x1="20" y1="26" x2="45" y2="15" stroke="#cc0000" stroke-width="1"/>
+                                    <line x1="22" y1="28" x2="47" y2="17" stroke="#0044cc" stroke-width="1"/>
+                                    <!-- Hole rows -->
+                                    <line x1="55" y1="25" x2="78" y2="34" stroke="#999" stroke-width="0.5" stroke-dasharray="1,2"/>
+                                    <line x1="53" y1="23" x2="76" y2="32" stroke="#999" stroke-width="0.5" stroke-dasharray="1,2"/>
+                                    <line x1="30" y1="32" x2="55" y2="42" stroke="#999" stroke-width="0.5" stroke-dasharray="1,2"/>
+                                    <!-- Resistor -->
+                                    <rect x="32" y="20" width="8" height="3" fill="#c8a050" stroke="#000" stroke-width="0.8" transform="rotate(-27,36,21.5)"/>
+                                    <!-- Capacitor -->
+                                    <ellipse cx="62" cy="30" rx="2.5" ry="4" fill="#224488" stroke="#000" stroke-width="0.8"/>
+                                    <!-- IC chip -->
+                                    <polygon points="40,30 52,35 48,37 36,32" fill="#222" stroke="#000" stroke-width="0.8"/>
+                                    <!-- Wires -->
+                                    <path d="M25,24 Q30,20 38,22" stroke="#ff3333" stroke-width="1.2" fill="none"/>
+                                    <path d="M52,35 Q58,34 62,30" stroke="#ffaa00" stroke-width="1.2" fill="none"/>
+                                    <path d="M48,37 Q55,40 65,36" stroke="#33cc33" stroke-width="1.2" fill="none"/>
+                                    <!-- LED -->
+                                    <circle cx="70" cy="27" r="2" fill="#ff4444" stroke="#000" stroke-width="0.8"/>
+                                </svg>
+                            </div>
+                            <h3>Electronics Mini Projects</h3>
+                            <p>PWM, linear power supply, audio &amp; mic amplifiers</p>
+                            <div class="dim-x"><span>150</span></div>
+                            <div class="dim-y"><span>120</span></div>
+                        </a>
+
+                        <!-- CAD Projects - Airplane -->
+                        <a href="https://github.com/dylaneburkey" target="_blank" class="project-card">
+                            <div class="project-drawing">
+                                <svg viewBox="0 0 100 90" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <!-- Fuselage -->
+                                    <path d="M15,45 Q20,40 50,38 Q75,36 90,40 Q92,42 90,44 Q75,48 50,46 Q20,48 15,45 Z" fill="#e8e8e8"/>
+                                    <!-- Fuselage bottom shading -->
+                                    <path d="M15,45 Q20,48 50,46 Q75,48 90,44" fill="#ccc" stroke="none"/>
+                                    <path d="M15,45 Q20,48 50,46 Q75,48 90,44" stroke="#000" stroke-width="1.5" fill="none"/>
+                                    <!-- Wing (top visible) -->
+                                    <path d="M38,38 L28,18 Q30,16 35,17 L55,35" fill="#3a7fc8" stroke="#000" stroke-width="1.2"/>
+                                    <!-- Wing underside hint -->
+                                    <path d="M38,46 L28,62 Q30,64 35,63 L55,46" fill="#2d6cb5" stroke="#000" stroke-width="1.2"/>
+                                    <!-- Tail vertical stabilizer -->
+                                    <path d="M18,42 L12,28 Q13,26 16,27 L22,40" fill="#cc3333" stroke="#000" stroke-width="1.2"/>
+                                    <!-- Tail horizontal stabilizer -->
+                                    <path d="M16,44 L10,52 Q11,54 14,53 L22,46" fill="#3a7fc8" stroke="#000" stroke-width="1"/>
+                                    <!-- Cockpit window -->
+                                    <ellipse cx="72" cy="40" rx="5" ry="2.5" fill="#aaddff" stroke="#000" stroke-width="0.8"/>
+                                    <!-- Engine on wing -->
+                                    <ellipse cx="40" cy="28" rx="3" ry="2" fill="#666" stroke="#000" stroke-width="0.8"/>
+                                </svg>
+                            </div>
+                            <h3>CAD Projects</h3>
+                            <p>SOLIDWORKS, Onshape, Fusion — models &amp; drawings</p>
+                            <div class="dim-x"><span>150</span></div>
+                            <div class="dim-y"><span>120</span></div>
+                        </a>
+
+                    </div>
+                </div>
+
+                <!-- Title Block -->
+                <div class="title-block">
+                    <div class="tb-row">
+                        <div class="tb-cell label">Drawn By</div>
+                        <div class="tb-cell">D. Burkey</div>
+                        <div class="tb-cell label">Date</div>
+                        <div class="tb-cell">2026</div>
+                    </div>
+                    <div class="tb-row">
+                        <div class="tb-cell label">Checked</div>
+                        <div class="tb-cell">-</div>
+                        <div class="tb-cell label">Scale</div>
+                        <div class="tb-cell">1:1</div>
+                    </div>
+                    <div class="tb-row">
+                        <div class="tb-cell label">Material</div>
+                        <div class="tb-cell large">Georgia Tech ME '27</div>
+                        <div class="tb-cell label">Sheet</div>
+                        <div class="tb-cell">2 of 2</div>
+                    </div>
+                    <div class="tb-row">
+                        <div class="tb-cell title" style="flex:1;">PROJECTS</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span class="sheet-tab">&#9654; Sheet2</span>
+        <span>Education Edition - Personal Use Only</span>
+        <span style="margin-left:auto;">1:1</span>
+        <span>mm</span>
+        <span>Editing Sheet2</span>
+    </div>
+
+    <script>
+        function scaleSheet() {
+            const viewport = document.querySelector('.viewport');
+            const sheet = document.querySelector('.drawing-sheet');
+            sheet.style.transform = 'scale(1)';
+            const vw = viewport.clientWidth - 20;
+            const vh = viewport.clientHeight - 20;
+            const sw = sheet.offsetWidth;
+            const sh = sheet.offsetHeight;
+            const scale = Math.min(vw / sw, vh / sh);
+            sheet.style.transform = 'scale(' + scale + ')';
+        }
+        window.addEventListener('load', scaleSheet);
+        window.addEventListener('resize', scaleSheet);
+    </script>
+
+</body>
+</html>
