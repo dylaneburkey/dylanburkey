@@ -212,10 +212,12 @@ def km(a,b):
 
 GEOCACHE=load("geocache.json",{})
 GEO_CHANGED=False
+GEO_NEGATIVE=set()
 def geo_city(city,state):
     global GEO_CHANGED
     key="city:"+city.lower().strip()+","+state
     if key in GEOCACHE: return GEOCACHE[key]
+    if key in GEO_NEGATIVE: return None
     url="https://geocoding-api.open-meteo.com/v1/search?"+urllib.parse.urlencode({"name":city,"count":20,"language":"en","format":"json"})
     result=None
     try:
@@ -227,12 +229,14 @@ def geo_city(city,state):
     except Exception: pass
     if result is not None:
         GEOCACHE[key]=result;GEO_CHANGED=True
+    else: GEO_NEGATIVE.add(key)
     return result
 
 def geo_street(address):
     global GEO_CHANGED
     key="street:"+address.strip().lower()
     if key in GEOCACHE:return GEOCACHE[key]
+    if key in GEO_NEGATIVE:return None
     # US Census address geocoding (US mainland street addresses, not approximate city matches)
     simplified=re.sub(r"\b(Suite|Ste|Floor|Fl)\.?\s*[\w-]+\b","",address,flags=re.I)
     url="https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?"+urllib.parse.urlencode({"address":simplified,"benchmark":"Public_AR_Current","vintage":"Current_Current","format":"json"})
@@ -245,6 +249,7 @@ def geo_street(address):
     except Exception:pass
     if result:
         GEOCACHE[key]=result;GEO_CHANGED=True
+    else: GEO_NEGATIVE.add(key)
     return result
 
 ROUTES=load("route_cache.json",{})
@@ -267,7 +272,7 @@ def match_office(job, offices, offices_by_city):
     loc=city_state(job["location"])
     if not loc: return None
     city,state=loc
-    job_geo=geo_street(job["worksite_address"]) if job["worksite_address"] else None
+    job_geo=geo_street(job["worksite_address"]) if ORS_KEY and job["worksite_address"] else None
     if not job_geo: job_geo=geo_city(city,state)
     candidates=[]
     if job_geo:
@@ -284,7 +289,7 @@ def match_office(job, offices, offices_by_city):
     if not candidates: return None
     best=None
     for office in candidates:
-        start=geo_street(office["address"])
+        start=geo_street(office["address"]) if ORS_KEY else None
         if not start: start=geo_city(office["city"],office["state"])
         mins=route_minutes(start,job_geo) if start and job_geo else None
         strict=bool(mins is not None and mins<=20 and start["precision"]=="street" and job_geo["precision"]=="street")
