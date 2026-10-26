@@ -275,8 +275,22 @@ def match_office(job, offices, offices_by_city):
     job_geo=geo_street(job["worksite_address"]) if ORS_KEY and job["worksite_address"] else None
     if not job_geo: job_geo=geo_city(city,state)
     candidates=[]
+    nearby_states={state}
+    # Include closely connected cross-border metro areas.
+    border_metros={
+        "DC":{"VA","MD"},"VA":{"DC","MD"},"MD":{"DC","VA"},
+        "NY":{"NJ","CT"},"NJ":{"NY","PA"},"CT":{"NY"},
+        "PA":{"NJ","DE"},"DE":{"PA","NJ"},
+        "MO":{"KS","IL"},"KS":{"MO"},"IL":{"MO","WI","IN"},
+        "OH":{"KY","IN"},"KY":{"OH","IN"},"IN":{"OH","KY","IL"},
+        "NC":{"SC"},"SC":{"NC","GA"},"GA":{"SC"},
+        "TN":{"KY","GA"},"AR":{"MO"},"WI":{"IL"},
+        "FL":{"GA"},"OR":{"WA"},"WA":{"OR"}
+    }
+    nearby_states.update(border_metros.get(state,set()))
     if job_geo:
         for office in offices:
+            if office["state"] not in nearby_states: continue
             office_city=geo_city(office["city"],office["state"])
             if office_city and km((job_geo["lat"],job_geo["lon"]),(office_city["lat"],office_city["lon"]))<48:
                 candidates.append((km((job_geo["lat"],job_geo["lon"]),(office_city["lat"],office_city["lon"])),office))
