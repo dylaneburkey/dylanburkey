@@ -72,10 +72,7 @@ SOURCES = [
     ("ashby","MachinaLabs","Machina Labs"),
     ("ashby","AtomicMachines","Atomic Machines"),
 ]
-STATE_CODES = dict(zip(
-    "Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming District of Columbia".split("|"),
-    []
-)) if False else {
+STATE_CODES = {
     "AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California",
     "CO":"Colorado","CT":"Connecticut","DE":"Delaware","FL":"Florida","GA":"Georgia",
     "HI":"Hawaii","ID":"Idaho","IL":"Illinois","IN":"Indiana","IA":"Iowa",
@@ -86,7 +83,7 @@ STATE_CODES = dict(zip(
     "ND":"North Dakota","OH":"Ohio","OK":"Oklahoma","OR":"Oregon","PA":"Pennsylvania",
     "RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota","TN":"Tennessee",
     "TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia","WA":"Washington",
-    "WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming","DC":"District of Columbia"
+    "WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming","DC":"District of Columbia","PR":"Puerto Rico"
 }
 US_STATES = {v.lower():k for k,v in STATE_CODES.items()}
 
@@ -282,6 +279,8 @@ def match_office(job, offices, offices_by_city):
         candidates=[o for _,o in candidates[:5]]
     else:
         candidates=offices_by_city.get((city.lower(),state),[])
+    if not candidates:
+        candidates=offices_by_city.get((city.lower(),state),[])
     if not candidates: return None
     best=None
     for office in candidates:
@@ -289,7 +288,7 @@ def match_office(job, offices, offices_by_city):
         if not start: start=geo_city(office["city"],office["state"])
         mins=route_minutes(start,job_geo) if start and job_geo else None
         strict=bool(mins is not None and mins<=20 and start["precision"]=="street" and job_geo["precision"]=="street")
-        if mins is not None and mins>20 and strict: continue
+        if (mins is not None and mins>20 and start["precision"]=="street" and job_geo["precision"]=="street"): continue
         status="verified" if strict else "review"
         score=(0 if strict else 1, mins if mins is not None else 1e6)
         candidate={"office":office["city"]+", "+office["state"],"office_address":office["address"],
@@ -300,8 +299,9 @@ def match_office(job, offices, offices_by_city):
 
 def send_alerts(new_jobs):
     host=os.getenv("SMTP_HOST"); username=os.getenv("SMTP_USER"); password=os.getenv("SMTP_PASSWORD")
-    to=os.getenv("ALERT_TO"); port=int(os.getenv("SMTP_PORT","587"))
+    to=os.getenv("ALERT_TO")
     if not (host and username and password and to and new_jobs):return
+    port=int(os.getenv("SMTP_PORT") or "587")
     msg=EmailMessage()
     msg["From"]=os.getenv("ALERT_FROM",username)
     msg["To"]=to
