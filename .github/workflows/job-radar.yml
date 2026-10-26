@@ -2,7 +2,7 @@ name: Job Radar scanner
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
   push:
     paths:
@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: job-radar-scanner
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   scan:
